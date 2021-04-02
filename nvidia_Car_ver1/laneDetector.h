@@ -35,7 +35,7 @@
 #define RIGHT_MID_OFFSET 20
 //#define RIGHT_ROI_X 360 // 600 original
 #define RIGHT_ROI_X 410
-#define LANE_SPACE 280 // Â÷¼± °£°İ - Å¾ºä·Î ºÃÀ» ¶§ ¾çÂÊ Â÷¼± »çÀÌÀÇ °£°İ
+#define LANE_SPACE 280 // ì°¨ì„  ê°„ê²© - íƒ‘ë·°ë¡œ ë´¤ì„ ë•Œ ì–‘ìª½ ì°¨ì„  ì‚¬ì´ì˜ ê°„ê²©
 
 // latest Update Lane Info
 #define BOTH_LANE_UPDATE 0
@@ -52,7 +52,7 @@
 #define LEFT_MID_OFFSET 40
 #define RIGHT_MID_OFFSET 40
 #define RIGHT_ROI_X 340 // 600
-#define LANE_SPACE 215 // Â÷¼± °£°İ - Å¾ºä·Î ºÃÀ» ¶§ ¾çÂÊ Â÷¼± »çÀÌÀÇ °£°İ
+#define LANE_SPACE 215 // ì°¨ì„  ê°„ê²© - íƒ‘ë·°ë¡œ ë´¤ì„ ë•Œ ì–‘ìª½ ì°¨ì„  ì‚¬ì´ì˜ ê°„ê²©
 */
 
 //controller parameter
@@ -67,14 +67,14 @@ struct Convolution {
 	//}
 };
 
-// ÀüÃ¼ ROI¿¡¼­ ÃßÃâÇÑ hougline¿¡°üÇÑ Á¤ºÎ 
+// ì „ì²´ ROIì—ì„œ ì¶”ì¶œí•œ houglineì—ê´€í•œ ì •ë¶€ 
 struct HoughLinesInfo {
 	vector<cv::Vec2f> leftLines, rightLines;
-	double leftLineSlope; // ¿ŞÂÊÀ¸·Î ±ºÁıÈ­µÈ ÇãÇÁ¶óÀÎµéÀÇ Æò±Õ ±â¿ï±â
-	double rightLineSlope; // ¿À¸¥ÂÊÀ¸·Î ±ºÁıÈ­µÈ ÇãÇÁ¶óÀÎµéÀÇ Æò±Õ ±â¿ï±â
-	double leftLineInterceptX; // ¿ŞÂÊÀ¸·Î ±ºÁıÈ­µÈ ÇãÇÁ¶óÀÎµéÀÇ Æò±Õ x ÀıÆí
-	double rightLineInterceptX; // ¿À¸¥ÂÊÀ¸·Î ±ºÁıÈ­µÈ ÇãÇÁ¶óÀÎµéÀÇ Æò±Õ x ÀıÆí
-	bool isScarp; // ±Ş°æ»ç µµ·ÎÀÎÁö¿¡ ´ëÇÑ Á¤º¸ => true: ±Ş°æ»ç
+	double leftLineSlope; // ì™¼ìª½ìœ¼ë¡œ êµ°ì§‘í™”ëœ í—ˆí”„ë¼ì¸ë“¤ì˜ í‰ê·  ê¸°ìš¸ê¸°
+	double rightLineSlope; // ì˜¤ë¥¸ìª½ìœ¼ë¡œ êµ°ì§‘í™”ëœ í—ˆí”„ë¼ì¸ë“¤ì˜ í‰ê·  ê¸°ìš¸ê¸°
+	double leftLineInterceptX; // ì™¼ìª½ìœ¼ë¡œ êµ°ì§‘í™”ëœ í—ˆí”„ë¼ì¸ë“¤ì˜ í‰ê·  x ì ˆí¸
+	double rightLineInterceptX; // ì˜¤ë¥¸ìª½ìœ¼ë¡œ êµ°ì§‘í™”ëœ í—ˆí”„ë¼ì¸ë“¤ì˜ í‰ê·  x ì ˆí¸
+	bool isScarp; // ê¸‰ê²½ì‚¬ ë„ë¡œì¸ì§€ì— ëŒ€í•œ ì •ë³´ => true: ê¸‰ê²½ì‚¬
 };
 
 /*
@@ -85,24 +85,24 @@ struct leftLineInfo{
 class LaneDetector {
 
 private:
-	cv::Mat normalViewOriginalFrame; // Á¤½Äºä ¿øº» ¿µ»ó
-	int normalViewOffsetX; // Á¤½Äºä ¿øº» ¿µ»ó¿¡¼­ x offset
-	int normalViewOffsetY; // Á¤½Äºä ¿øº» ¿µ»ó¿¡¼­ y offset
-	cv::Mat ipSrcImage; // ÁÂÇ¥ È®ÀÎ¿ë image => ip imageÀÎµ¥ roi cutµÇÁö ¾ÊÀº ÀÌ¹ÌÁö
+	cv::Mat normalViewOriginalFrame; // ì •ì‹ë·° ì›ë³¸ ì˜ìƒ
+	int normalViewOffsetX; // ì •ì‹ë·° ì›ë³¸ ì˜ìƒì—ì„œ x offset
+	int normalViewOffsetY; // ì •ì‹ë·° ì›ë³¸ ì˜ìƒì—ì„œ y offset
+	cv::Mat ipSrcImage; // ì¢Œí‘œ í™•ì¸ìš© image => ip imageì¸ë° roi cutë˜ì§€ ì•Šì€ ì´ë¯¸ì§€
 	
 
-	HoughLinesInfo houghLinesInfo; // houghline¿¡ ´ëÇÑ Á¤º¸ 
-	cv::Point leftPointRecord[2]; // ¿ŞÂÊ Â÷¼± Á¤º¸(À­ÂÊ, ¾Æ·§ÂÊ Point 2°³)
-	cv::Point rightPointRecord[2]; // ¿À¸¥ÂÊ Â÷¼± Á¤º¸(À­ÂÊ, ¾Æ·§ÂÊ Point 2°³)
-	cv::Point totalPointRecord[2]; // ÀüÃ¼ ROI¿¡¼­ Â÷¼± Á¤º¸(À­ÂÊ, ¾Æ·§ÂÊ Point 2°³)
-	cv::Point leftLanePoints[2]; // ¿ŞÂÊ Â÷¼± À§ÂÊ Á¡, ¾Æ·¡ÂÊ Á¡
-	cv::Point rightLanePoints[2]; // ¿À¸¥ÂÊ Â÷¼± À§ÂÊ Á¡, ¾Æ·¡ÂÊ Á¡
-	cv::Point totalLanePoints[2]; // ÀüÃ¼ ROI¿¡¼­ Â÷¼± À§ÂÊ Á¡, ¾Æ·¡ÂÊ Á¡
+	HoughLinesInfo houghLinesInfo; // houghlineì— ëŒ€í•œ ì •ë³´ 
+	cv::Point leftPointRecord[2]; // ì™¼ìª½ ì°¨ì„  ì •ë³´(ìœ—ìª½, ì•„ë«ìª½ Point 2ê°œ)
+	cv::Point rightPointRecord[2]; // ì˜¤ë¥¸ìª½ ì°¨ì„  ì •ë³´(ìœ—ìª½, ì•„ë«ìª½ Point 2ê°œ)
+	cv::Point totalPointRecord[2]; // ì „ì²´ ROIì—ì„œ ì°¨ì„  ì •ë³´(ìœ—ìª½, ì•„ë«ìª½ Point 2ê°œ)
+	cv::Point leftLanePoints[2]; // ì™¼ìª½ ì°¨ì„  ìœ„ìª½ ì , ì•„ë˜ìª½ ì 
+	cv::Point rightLanePoints[2]; // ì˜¤ë¥¸ìª½ ì°¨ì„  ìœ„ìª½ ì , ì•„ë˜ìª½ ì 
+	cv::Point totalLanePoints[2]; // ì „ì²´ ROIì—ì„œ ì°¨ì„  ìœ„ìª½ ì , ì•„ë˜ìª½ ì 
 	
-	cv::Mat transformMatrix; // IPM º¯È¯Çà·Ä => high cohesionÀ¸·Î Å¬·¡½º ³»·Î º¯¼ö ¿Å±â´Â°Ô ³´°ÚÁö????
-	cv::Mat invertTransformMatrix; // IPM ¿ªº¯È¯ Çà·Ä
+	cv::Mat transformMatrix; // IPM ë³€í™˜í–‰ë ¬ => high cohesionìœ¼ë¡œ í´ë˜ìŠ¤ ë‚´ë¡œ ë³€ìˆ˜ ì˜®ê¸°ëŠ”ê²Œ ë‚«ê² ì§€????
+	cv::Mat invertTransformMatrix; // IPM ì—­ë³€í™˜ í–‰ë ¬
 	cv::Mat ipImage_T; // thresholded Inverse perspective Image 
-	cv::Mat ipCannyImage; // ipImage_TÀÇ canny Edge detectionÇÑ ÀÌ¹ÌÁö
+	cv::Mat ipCannyImage; // ipImage_Tì˜ canny Edge detectioní•œ ì´ë¯¸ì§€
 	cv::Mat ipLeftImage_T; // left thresholded Inverse perspective Image 
 	cv::Mat ipRightImage_T; // right thresholded Inverse perspective Image 
 	cv::Mat ipImage; // Inverse perspective Image & ROI cut complete 
@@ -113,24 +113,24 @@ private:
 	cv::Mat laneMarkerFrameR;
 
 	
-	int searchWindowLength = 10; // search windowÀÇ ±æÀÌÀÇ Àı¹İ => ½ÇÁ¦ search windowÀÇ ±æÀÌ´Â 20ÀÌ´Ù.
+	int searchWindowLength = 10; // search windowì˜ ê¸¸ì´ì˜ ì ˆë°˜ => ì‹¤ì œ search windowì˜ ê¸¸ì´ëŠ” 20ì´ë‹¤.
 	int matchFilterWidth;
 	int samplePointNum;
 	int ipFrameWidth;
 
-	vector<cv::Point> leftSearchWindowPoints; // °¡¿ì½Ã¾È Ä¿³ÎÀ» convolution½ÃÅ³ search windowÀÇ ½ÃÀÛÁ¡ - left ROI
-	vector<cv::Point> rightSearchWindowPoints; // °¡¿ì½Ã¾È Ä¿³ÎÀ» convolution½ÃÅ³ search windowÀÇ ½ÃÀÛÁ¡ - right ROI
-	vector<cv::Point> totalSearchWindowPoints; // °¡¿ì½Ã¾È Ä¿³ÎÀ» convolution½ÃÅ³ search windowÀÇ ½ÃÀÛÁ¡ - total ROI
-	double * gaussianKernel; // µµ·Î¿Í convolutionÀ» ½ÃÅ³ °¡¿ì½Ã¾È Ä¿³Î(match filter·Î¼­ È°¿ëÇÑ´Ù)
+	vector<cv::Point> leftSearchWindowPoints; // ê°€ìš°ì‹œì•ˆ ì»¤ë„ì„ convolutionì‹œí‚¬ search windowì˜ ì‹œì‘ì  - left ROI
+	vector<cv::Point> rightSearchWindowPoints; // ê°€ìš°ì‹œì•ˆ ì»¤ë„ì„ convolutionì‹œí‚¬ search windowì˜ ì‹œì‘ì  - right ROI
+	vector<cv::Point> totalSearchWindowPoints; // ê°€ìš°ì‹œì•ˆ ì»¤ë„ì„ convolutionì‹œí‚¬ search windowì˜ ì‹œì‘ì  - total ROI
+	double * gaussianKernel; // ë„ë¡œì™€ convolutionì„ ì‹œí‚¬ ê°€ìš°ì‹œì•ˆ ì»¤ë„(match filterë¡œì„œ í™œìš©í•œë‹¤)
 
-	bool isLaneDetected; // ¾çÂÊ Â÷¼±ÀÌ ¿Ã¹Ù·Î °ËÃâµÇ¾ú´Â°¡? ÆòÇà, ÀÏÁ¤°Å¸® À¯Áö
-	float ipLeftLaneSlope; // top view¿¡¼­ °ËÃâµÈ ¿ŞÂÊ Â÷¼± ±â¿ï±â
-	float ipRightLaneSlope; // top view¿¡¼­ °ËÃâµÈ ¿À¸¥ÂÊ Â÷¼± ±â¿ï±â
-	cv::Point topLeftPoint1, topLeftPoint2; // topview¿¡¼­ÀÇ left Â÷¼± point
-	cv::Point topRightPoint1, topRightPoint2; // topview¿¡¼­ÀÇ right Â÷¼± point
-	cv::Point topTotalPoint1, topTotalPoint2; // topview¿¡¼­ÀÇ total Â÷¼± point
+	bool isLaneDetected; // ì–‘ìª½ ì°¨ì„ ì´ ì˜¬ë°”ë¡œ ê²€ì¶œë˜ì—ˆëŠ”ê°€? í‰í–‰, ì¼ì •ê±°ë¦¬ ìœ ì§€
+	float ipLeftLaneSlope; // top viewì—ì„œ ê²€ì¶œëœ ì™¼ìª½ ì°¨ì„  ê¸°ìš¸ê¸°
+	float ipRightLaneSlope; // top viewì—ì„œ ê²€ì¶œëœ ì˜¤ë¥¸ìª½ ì°¨ì„  ê¸°ìš¸ê¸°
+	cv::Point topLeftPoint1, topLeftPoint2; // topviewì—ì„œì˜ left ì°¨ì„  point
+	cv::Point topRightPoint1, topRightPoint2; // topviewì—ì„œì˜ right ì°¨ì„  point
+	cv::Point topTotalPoint1, topTotalPoint2; // topviewì—ì„œì˜ total ì°¨ì„  point
 
-	// ÃÖÁ¾ °ËÃâ µÈ lane markers·Î laneModeling¿¡ »ç¿ëµÈ´Ù.
+	// ìµœì¢… ê²€ì¶œ ëœ lane markersë¡œ laneModelingì— ì‚¬ìš©ëœë‹¤.
 	vector<cv::Point> leftLaneMarkerPoints;
 	vector<cv::Point> rightLaneMarkerPoints;
 	vector<cv::Point> totalLaneMarkerPoints;
@@ -178,7 +178,7 @@ public:
 		lowLeftSrcP = lowLeft;
 
 	
-		gaussianKernel = setGaussianKernel(8, 1.5); // µµ·ÎÀÇ Æø 6 pixel
+		gaussianKernel = setGaussianKernel(8, 1.5); // ë„ë¡œì˜ í­ 6 pixel
 		houghLinesInfo.isScarp = false;
 		isLaneDetected = false;
 		normalViewOffsetX = offsetX;
@@ -199,16 +199,16 @@ public:
 
 	}
 
-	// warpingÇÏ°íÀÚ ÇÏ´Â ¿µ¿ªÀÇ ³×°³ÀÇ Á¡À» ÃÊ±âÈ­ÇÏ´Â ÇÔ¼ö
+	// warpingí•˜ê³ ì í•˜ëŠ” ì˜ì—­ì˜ ë„¤ê°œì˜ ì ì„ ì´ˆê¸°í™”í•˜ëŠ” í•¨ìˆ˜
 	void setWarpSrcPoint(int option, cv::Point srcPoint); 
 	
-	// Persepective transformation(¿ø±Ù¹ı º¯È¯)
+	// Persepective transformation(ì›ê·¼ë²• ë³€í™˜)
 	void warpImage(cv::Mat src, int option);
 	
-	// ipImage_T¸¦ returnÇÔF
+	// ipImage_Të¥¼ returní•¨F
 	cv::Mat getIpImage_T(void);
 
-	// ipSrcImage¸¦ returnÇÔ
+	// ipSrcImageë¥¼ returní•¨
 	cv::Mat getIpImage(void);
 
 	// laneInfo
@@ -216,7 +216,7 @@ public:
 	void setSamplePoints(vector<cv::Vec2f> &lanes, cv::Mat frame, vector<cv::Point> &searchWindowPoint);
 	double* setGaussianKernel(int width, double sigma);
 	void matchGaussianFilter(vector<cv::Point> &searchWindowPoint, vector<cv::Point> &LaneMarkerPoints, cv::Mat frame);  // match gaussian filter along search window to obtain lane markers
-	void fitsLine(cv::Mat, int option); // fits line from private variable LaneMarkers(left, right) => ³ªÁß¿¡ frame ÆÄ¶ó¹ÌÅÍ °ª ¾ø¾Ö°í ´Ü¼øÈ÷ Point °ª¸¸ ¹Ù²Û´Â ÀÛ¾÷À¸·Î ¹Ù²Ü °Í!!!!
+	void fitsLine(cv::Mat, int option); // fits line from private variable LaneMarkers(left, right) => ë‚˜ì¤‘ì— frame íŒŒë¼ë¯¸í„° ê°’ ì—†ì• ê³  ë‹¨ìˆœíˆ Point ê°’ë§Œ ë°”ê¾¼ëŠ” ì‘ì—…ìœ¼ë¡œ ë°”ê¿€ ê²ƒ!!!!
 										//   bool predicate(const Convolution& c1, const Convolution& c2);
 	void setOriginalFrame(cv::Mat);
 	void drawLaneDetectResult(int option);
