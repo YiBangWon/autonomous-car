@@ -1,15 +1,13 @@
 #!/usr/bin/env python
-# update 191006
 # import torch
 # import cv2
 # import threading
 # import Queue as que
 # import time
 # import numpy as np
-#
+
 # import roslib
-import sys
-print(sys.version)
+# import sys
 # import rospy
 #
 # import importlib
