@@ -34,7 +34,7 @@
 //
 //	HOGDescriptor d(Size(64, 64), Size(32, 32), Size(16, 16), Size(16, 16), 9);
 //
-//	//VideoCapture cap("C:/Users/smartcar/Desktop/JAEKYUNG/ÃÊ±âµ¥ÀÌÅÍ/¿µ»ó/front1542_1551.mpg");
+//	//VideoCapture cap("C:/Users/smartcar/Desktop/JAEKYUNG/ì´ˆê¸°ë°ì´í„°/ì˜ìƒ/front1542_1551.mpg");
 //	VideoCapture cap("front1542_1551.mpg");
 //	if (!cap.isOpened()) {
 //		cout << "Error initializing video capture" << endl;
@@ -164,7 +164,7 @@
 //int searchROI(Mat gray, Ptr<ml::SVM> svm, HOGDescriptor d, Mat frame, int y) {
 //	Rect currentROI;
 //	int currentResult = 0, cnt = 0;
-//	// ¾çÂÊ Â÷¼±ÀÇ ±â¿ï±â
+//	// ì–‘ìª½ ì°¨ì„ ì˜ ê¸°ìš¸ê¸°
 //	int l_slope, r_slope;
 //	//HEE BEOM contributes
 //	r_slope = abs(tl.y - bl.y) / abs(tl.x - bl.x);
@@ -173,11 +173,11 @@
 //	int intersection_x, intersection_y;
 //	intersection_x = (tr.y - tl.y - (r_slope * tr.x) + (l_slope * tl.x)) / (l_slope - r_slope);
 //	intersection_y = l_slope * (intersection_x - tl.x) + tl.y;
-//	intersection = Point(intersection_x, intersection_y); // ¼Ò½ÇÁ¡
+//	intersection = Point(intersection_x, intersection_y); // ì†Œì‹¤ì 
 //
 //	int l_x = (y - tl.y) / l_slope + tl.x;
 //	int r_x = (y - tr.y) / r_slope + tr.x;
-//	// roiSize´Â ÇöÀç y ÁÂÇ¥ ³ôÀÌ¿¡¼­ÀÇ Â÷¼± °£°İÀÇ 0.6¹è.
+//	// roiSizeëŠ” í˜„ì¬ y ì¢Œí‘œ ë†’ì´ì—ì„œì˜ ì°¨ì„  ê°„ê²©ì˜ 0.6ë°°.
 //	int roiSize = abs(r_x - l_x) / 10 * 6;
 //	int roiXL = l_x;
 //	int roiXR = r_x - roiSize;
@@ -194,19 +194,19 @@
 //			switch (currentResult) {
 //			case 1: // Car - Red color
 //			{
-//				car++; // 'Car'·Î ÀÎ½ÄµÈ È½¼ö
+//				car++; // 'Car'ë¡œ ì¸ì‹ëœ íšŸìˆ˜
 //				//rectangle(currFrame, currentROI, RED, 1, 8, 0);
 //				break;
 //			}
 //			//case 2: // Truck - Green color
 //			//{
-//			//   truck++; // 'Truck'·Î ÀÎ½ÄµÈ È½¼ö
+//			//   truck++; // 'Truck'ë¡œ ì¸ì‹ëœ íšŸìˆ˜
 //			//   rectangle(currFrame, currentROI, GREEN, 1, 8, 0);
 //			//   break;
 //			//}
 //			//case 3: // Bus - Blue color
 //			//{
-//			//   bus++; // 'Bus'·Î ÀÎ½ÄµÈ È½¼ö
+//			//   bus++; // 'Bus'ë¡œ ì¸ì‹ëœ íšŸìˆ˜
 //			//   rectangle(currFrame, currentROI, BLUE, 1, 8, 0);
 //			//   break;
 //			//}
@@ -282,7 +282,7 @@
 //		cal_OptFlow = true;
 //	}
 //	else {
-//		cout << "100 frames ÀÌ»ó ÀÎ½ÄÀÌ µÇÁö ¾Ê¾Ò½À´Ï´Ù." << endl;
+//		cout << "100 frames ì´ìƒ ì¸ì‹ì´ ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤." << endl;
 //		cal_OptFlow = false;
 //		imshow("detected", currFrame);
 //	}
