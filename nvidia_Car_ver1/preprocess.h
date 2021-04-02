@@ -6,15 +6,15 @@
 #include "opencv/cv.hpp"
 
 /*
-======================================= B-Snake ¾Ë°í¸®Áò Àû¿ëÀ» À§ÇØ ÇÊ¿äÇÑ Á¤º¸ - ÁÖ¼®Ã³¸®ÇÔ =======================================================
-// sub ROI¿¡ ´ëÇÑ Á¤º¸
+======================================= B-Snake ì•Œê³ ë¦¬ì¦˜ ì ìš©ì„ ìœ„í•´ í•„ìš”í•œ ì •ë³´ - ì£¼ì„ì²˜ë¦¬í•¨ =======================================================
+// sub ROIì— ëŒ€í•œ ì •ë³´
 #define ROI_LEVEL1 0
 #define ROI_LEVEL2 1
 #define ROI_LEVEL3 2
 #define ROI_LEVEL4 3
 //#define ROI_LEVEL_F 4
 #define ROI_NUM 4
-// ¿µ»óÀÇ sub ROI ¼³Á¤¿¡ °üÇÑ ÁÂÇ¥: À§ÂÊ¿¡¼­ ¾Æ·¡ÂÊÀ¸·Î ROI1 ~4 => B-snake ¾Ë°í¸®ÁòÀ» »ç¿ëÇÏ±â À§ÇØ¼­ ÇÊ¿äÇÑ º¯¼öÀÌ´Ù(Çö ÇÁ·Î±×·¥ÀÇ ³í¸®¿¡¼­´Â »ç¿ëµÇÁö ¾ÊÀ½).
+// ì˜ìƒì˜ sub ROI ì„¤ì •ì— ê´€í•œ ì¢Œí‘œ: ìœ„ìª½ì—ì„œ ì•„ë˜ìª½ìœ¼ë¡œ ROI1 ~4 => B-snake ì•Œê³ ë¦¬ì¦˜ì„ ì‚¬ìš©í•˜ê¸° ìœ„í•´ì„œ í•„ìš”í•œ ë³€ìˆ˜ì´ë‹¤(í˜„ í”„ë¡œê·¸ë¨ì˜ ë…¼ë¦¬ì—ì„œëŠ” ì‚¬ìš©ë˜ì§€ ì•ŠìŒ).
 #define UPPER_LEFT_1  cv::Point(upperLeft.x, upperLeft.y - roiStartY)
 #define LOWER_RIGHT_1  cv::Point(lowerRight.x, upperLeft.y + height * 1/6 - roiStartY) // blue
 #define UPPER_LEFT_2  cv::Point(upperLeft.x, upperLeft.y + height * 1/6 - roiStartY)
@@ -26,7 +26,7 @@
 ==================================================================================================================================================
 *///nvidia@tegra-ubuntu:~
 
-#define STACK_FRAME_NUM 2 // stack¿¡ ÀúÀåÇÒ ÀÌÀü ÇÁ·¹ÀÓÀÇ °¹¼ö => Temporal blurring¿¡¼­ »ç¿ëÇÑ´Ù
+#define STACK_FRAME_NUM 2 // stackì— ì €ì¥í•  ì´ì „ í”„ë ˆì„ì˜ ê°¯ìˆ˜ => Temporal blurringì—ì„œ ì‚¬ìš©í•œë‹¤
 
 #ifndef _PRE_PROCESS__
 #define _PRE_PROCESS__
@@ -35,33 +35,33 @@ using namespace std;
 class PreProcess {
 
 private:
-	cv::Mat originalFrame; // ¿øº» ¿µ»ó frame
-	cv::Mat processFrame; // ROI gray scale Frame - grayscale·Î º¯È¯ÇÑ µµ·Î ¿µ¿ª¿¡ ´ëÇØ¼­¸¸ ÀüÃ³¸®¸¦ ÇÔÀ¸·Î ¿¬»ê·®À» ÁÙÀÏ ¼ö ÀÖ´Ù.
+	cv::Mat originalFrame; // ì›ë³¸ ì˜ìƒ frame
+	cv::Mat processFrame; // ROI gray scale Frame - grayscaleë¡œ ë³€í™˜í•œ ë„ë¡œ ì˜ì—­ì— ëŒ€í•´ì„œë§Œ ì „ì²˜ë¦¬ë¥¼ í•¨ìœ¼ë¡œ ì—°ì‚°ëŸ‰ì„ ì¤„ì¼ ìˆ˜ ìˆë‹¤.
 	cv::Mat otsuProcessedFrame; // preprocessed frame
 	cv::Mat temporalProcessedThresholdedFrame; // binary frame
 	cv::Mat temporalProcessedFrame; // gray scale frame
-	cv::Mat warpFrame; // inverse perspecive mappingÀ» ÇÑ frame
+	cv::Mat warpFrame; // inverse perspecive mappingì„ í•œ frame
 	cv::Mat preprocessedFrame_E;
 	cv::Mat normalViewROIFrame;
 	//cv::Mat roiFrame[ROI_NUM]; // B-Snake
-	vector<cv::Mat> frameStack; // ÀÌÀü ÇÁ·¹ÀÓµéÀ» ÀúÀåÇÏ´Â º¯¼ö - temporalBlur¿¡¼­ »ç¿ë
-	//cv::Mat leftOriginalFrame; // ÁÂÃø(Á¤È®È÷ ¹İ)
-	//cv::Mat rightOriginalFrame; // ¿ìÃø(Á¤È®È÷ ¹İ)
-	int frameStackCount; // frameStack¿¡ µé¾îÀÖ´Â frameÀÇ °¹¼ö
-	int frameNum; // ÇöÀç ÇÁ·¹ÀÓ ¹øÈ£
-	int roiStartY; // ¿øº» ÇÁ·¹ÀÓ¿¡¼­ roi FrameÀÌ ½ÃÀÛÇÏ´Â yÁÂÇ¥(³ôÀÌ) => roi Ã³¸®ÈÄ ½ÇÁ¦ ¿µ»ó¿¡¼­ÀÇ À§Ä¡¸¦ Ã£±â À§ÇÑ offset °ª
-	int hight; // roi ³ôÀÌ
+	vector<cv::Mat> frameStack; // ì´ì „ í”„ë ˆì„ë“¤ì„ ì €ì¥í•˜ëŠ” ë³€ìˆ˜ - temporalBlurì—ì„œ ì‚¬ìš©
+	//cv::Mat leftOriginalFrame; // ì¢Œì¸¡(ì •í™•íˆ ë°˜)
+	//cv::Mat rightOriginalFrame; // ìš°ì¸¡(ì •í™•íˆ ë°˜)
+	int frameStackCount; // frameStackì— ë“¤ì–´ìˆëŠ” frameì˜ ê°¯ìˆ˜
+	int frameNum; // í˜„ì¬ í”„ë ˆì„ ë²ˆí˜¸
+	int roiStartY; // ì›ë³¸ í”„ë ˆì„ì—ì„œ roi Frameì´ ì‹œì‘í•˜ëŠ” yì¢Œí‘œ(ë†’ì´) => roi ì²˜ë¦¬í›„ ì‹¤ì œ ì˜ìƒì—ì„œì˜ ìœ„ì¹˜ë¥¼ ì°¾ê¸° ìœ„í•œ offset ê°’
+	int hight; // roi ë†’ì´
 	int width; 
 	int frameHight; // originalFrame Hight
 	int frameWidth;
 
-	//ROI¸¦ ¼³Á¤ÇÏ±â À§ÇÑ Point¿¡ ´ëÇÑ Á¤º¸
+	//ROIë¥¼ ì„¤ì •í•˜ê¸° ìœ„í•œ Pointì— ëŒ€í•œ ì •ë³´
 	cv::Point upperLeft;
 	cv::Point  lowerRight;
 	cv::Point lowerRigntOfLeftFrame;
 	cv::Point upperLeftOfRightFrame;
 
-	bool isTemporalFrameReady = false; // temporal blur¸¦ ÇÒ ¼ö ÀÖ´ÂÁöÀÇ ¿©ºÎ(stack¿¡ ÀÌÀü ÇÁ·¹ÀÓµé¿¡ ´ëÇÑ Á¤º¸°¡ ÃàÀû µÇ¾ú´Â°¡ÀÇ ¿©ºÎ)
+	bool isTemporalFrameReady = false; // temporal blurë¥¼ í•  ìˆ˜ ìˆëŠ”ì§€ì˜ ì—¬ë¶€(stackì— ì´ì „ í”„ë ˆì„ë“¤ì— ëŒ€í•œ ì •ë³´ê°€ ì¶•ì  ë˜ì—ˆëŠ”ê°€ì˜ ì—¬ë¶€)
 
 
 public:
@@ -69,31 +69,31 @@ public:
 	PreProcess() {}
 
 	PreProcess(cv::Mat& frame, int upperLeftX, int upperLeftY, int lowerRightX, int lowerRightY) {
-		/* subRoi frame ÃÊ±âÈ­ */
+		/* subRoi frame ì´ˆê¸°í™” */
 		originalFrame = frame;
 		frameHight = frame.rows;
 		frameWidth = frame.cols;
 
-		// Ã³¸®ÇÒ ROI ¼³Á¤
+		// ì²˜ë¦¬í•  ROI ì„¤ì •
 		upperLeft = cv::Point(upperLeftX, upperLeftY);
 		lowerRight = cv::Point(lowerRightX, lowerRightY);
 
 		hight = lowerRight.y -upperLeft.y;
 		width = lowerRight.x - upperLeft.x;
 		
-		/* frameStackÀÇ countÁ¤º¸¿Í ÀüÃ¼ ÇÁ·¹ÀÓ °¹¼ö¿¡ ´ëÇÑ Á¤º¸ ÃÊ±âÈ­ */
+		/* frameStackì˜ countì •ë³´ì™€ ì „ì²´ í”„ë ˆì„ ê°¯ìˆ˜ì— ëŒ€í•œ ì •ë³´ ì´ˆê¸°í™” */
 		frameStackCount = 0;
 		frameNum = 1;
 		
-		/* ÀüÃ¼ ROI(Region Of Interest) , ¿À¸¥ÂÊ ROI, ¿ŞÂÊ ROI »ı¼º */
+		/* ì „ì²´ ROI(Region Of Interest) , ì˜¤ë¥¸ìª½ ROI, ì™¼ìª½ ROI ìƒì„± */
 		processFrame = frame(cv::Rect(upperLeft, lowerRight));
 		normalViewROIFrame = processFrame.clone();
-		//cout << "=======> column ±æÀÌ: " << processFrame.cols << endl;
+		//cout << "=======> column ê¸¸ì´: " << processFrame.cols << endl;
 		cv::cvtColor(processFrame, processFrame, CV_BGR2GRAY);
 		//leftOriginalFrame = frame(cv::Rect(upperLeft, lowerRigntOfLeftFrame));
 		//rightOriginalFrame = frame(cv::Rect(upperLeftOfRightFrame, lowerRight));
 		/* 
-		===================== ÀüÃ¼ ROI¿¡ ´ëÇÑ ´ÙÁß ROI - B-snake ¾Ë°í¸®Áò¿¡¼­ »ç¿ë ====================== 
+		===================== ì „ì²´ ROIì— ëŒ€í•œ ë‹¤ì¤‘ ROI - B-snake ì•Œê³ ë¦¬ì¦˜ì—ì„œ ì‚¬ìš© ====================== 
 		//height = abs(lowerRight.y - upperLeft.y);
 		//roiFrame[ROI_LEVEL1] = processFrame(cv::Rect(UPPER_LEFT_1, LOWER_RIGHT_1));
 		//roiFrame[ROI_LEVEL2] = processFrame(cv::Rect(UPPER_LEFT_2, LOWER_RIGHT_2));
@@ -105,12 +105,12 @@ public:
 
 	/* method declaration */
 	void preprocessElec(vector<cv::Point>); // preproecess for 1/10 electric car 
-	void preprocess(void); // grayscale·Î º¯È¯ & subRoi·Î frame ºĞÇÒ
+	void preprocess(void); // grayscaleë¡œ ë³€í™˜ & subRoië¡œ frame ë¶„í• 
 	int getOtsuThreshold(cv::Mat &srcFrame, cv::Mat &grayFrame);
-	int getBasicGlobalThresholdValue(cv::Mat &srcFrame); // basic method·Î ¿µ»óÀÇ (int type)threshold °ªÀ» ¸®ÅÏÇÏ´Â ÇÔ¼ö
+	int getBasicGlobalThresholdValue(cv::Mat &srcFrame); // basic methodë¡œ ì˜ìƒì˜ (int type)threshold ê°’ì„ ë¦¬í„´í•˜ëŠ” í•¨ìˆ˜
 	void updateFrame(const cv::Mat &frame); // video frame update
 	cv::Mat temporalBlur(cv::Mat frame); // temporal Blurring 
-	bool addToFrameStack(cv::Mat frame); // add to frame stack(ÀÌÀü ÇÁ·¹ÀÓµé ÀúÀå)
+	bool addToFrameStack(cv::Mat frame); // add to frame stack(ì´ì „ í”„ë ˆì„ë“¤ ì €ì¥)
 	cv::Mat getTemporalThresholdProcessedFrame(void);
 	cv::Mat getOtsuProcessedFrame(void);
 	bool isTemporalProcessComplete(void);
