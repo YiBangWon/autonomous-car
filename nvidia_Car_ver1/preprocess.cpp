@@ -11,7 +11,7 @@ void PreProcess::preprocessElec(vector<cv::Point> point) {
 	//cv::blur(grayFrame, grayFrame, cv::Size(7,7));
 	cv::GaussianBlur(grayFrame, grayFrame, cv::Size(5, 5), 1.5);
 	//cv::blur(grayFrame, grayFrame, cv::Size( 7, 7));
-	//cv::bilateralFilter(grayFrame, temp, -1, 5, 5); // ÀúÁÖÆÄ ÇÊÅÍ¸µ
+	//cv::bilateralFilter(grayFrame, temp, -1, 5, 5); // ì €ì£¼íŒŒ í•„í„°ë§
 	//grayFrame = temp;
 	
 	cv::adaptiveThreshold(grayFrame, processedFrame, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, 7, -0.3); // not bad ver1
@@ -39,11 +39,11 @@ void PreProcess::preprocessElec(vector<cv::Point> point) {
 
 void PreProcess::preprocess() {
    //for (int i = 0; i < ROI_NUM; i++) {
-   //   // ¿µ»óÀÇ °ü½É ¿µ¿ªÀÇ ÁÂ»ó´Ü°ú ¿ìÇÏ´Ü Point
-   //   cv::Mat grayFrame = roiFrame[i]; // grayscale ¿µ»ó
-   //   cv::Mat blurredGrayFrame; // blur Ã³¸®µÈ gray¿µ»ó
-   //   cv::Mat sharpFrame; // grayframeÀ» sharpeningÇÑ ¿µ»ó
-   //   cv::Mat sharpBlurFrame; // sharpeneingÇÑ ¿µ»óÀ» blur½ÃÅ²
+   //   // ì˜ìƒì˜ ê´€ì‹¬ ì˜ì—­ì˜ ì¢Œìƒë‹¨ê³¼ ìš°í•˜ë‹¨ Point
+   //   cv::Mat grayFrame = roiFrame[i]; // grayscale ì˜ìƒ
+   //   cv::Mat blurredGrayFrame; // blur ì²˜ë¦¬ëœ grayì˜ìƒ
+   //   cv::Mat sharpFrame; // grayframeì„ sharpeningí•œ ì˜ìƒ
+   //   cv::Mat sharpBlurFrame; // sharpeneingí•œ ì˜ìƒì„ blurì‹œí‚¨
 
    //   int thresholdValue;
    //   if(i == 4) imshow("gray frame", grayFrame);
@@ -54,17 +54,17 @@ void PreProcess::preprocess() {
    //   //}
    //   //cout << frameNum << endl;
    //   /*
-   //   ÀúÁÖÆÄ ÇÊÅÍ¸µ
-   //   cv::blur(image, result, cv::Size(5,5)) => °¢ È­¼ÒÀÇ °ªÀ» »ç°¢Çü ÀÌ¿ôÀÇ Æò±Õ°ªÀ¸·Î ´ëÄ¡ÇÏ¿© ¿µ»óÀ» ºÎµå·´°Ô ÇÔ
+   //   ì €ì£¼íŒŒ í•„í„°ë§
+   //   cv::blur(image, result, cv::Size(5,5)) => ê° í™”ì†Œì˜ ê°’ì„ ì‚¬ê°í˜• ì´ì›ƒì˜ í‰ê· ê°’ìœ¼ë¡œ ëŒ€ì¹˜í•˜ì—¬ ì˜ìƒì„ ë¶€ë“œëŸ½ê²Œ í•¨
    //   cv::GaussianBlur(image, result, cv::Size(5,5), 1.5)
-   //   - Áß½É È­¼Ò¿¡¼­ÀÇ °Å¸®¿¡ µû¸¥ °¡ÁßÄ¡¸¦ Àû¿ëÇÑ mask»ç¿ë
-   //   - °¡Áß Æò±Õ
-   //   - Linear operation : does not preserve edges(sigma°ª¿¡ µû¶ó smooothing°ú edge º¸Á¸µµ°¡ °áÁ¤µÊ)
+   //   - ì¤‘ì‹¬ í™”ì†Œì—ì„œì˜ ê±°ë¦¬ì— ë”°ë¥¸ ê°€ì¤‘ì¹˜ë¥¼ ì ìš©í•œ maskì‚¬ìš©
+   //   - ê°€ì¤‘ í‰ê· 
+   //   - Linear operation : does not preserve edges(sigmaê°’ì— ë”°ë¼ smooothingê³¼ edge ë³´ì¡´ë„ê°€ ê²°ì •ë¨)
    //   cv::medianBlur(src, dst, int ksize)
    //   - non-linear filter: edge preserving
-   //   cv::bilateralFilter(src, dst, int d, double sigmaColor, double sigmaSpace, int borderType = BORDER_DEFAULT) - ¾ç¹æÇâ ÇÊÅÍ
-   //   - Áß½É È­¼Ò¿¡¼­ÀÇ °Å¸®»Ó¸¸ ¾Æ´Ï¶ó Áß½ÉÈ­¼Ò¿ÍÀÇ ¹à±â Â÷ÀÌµµ °í·ÁÇÔ
-   //   - edge¸¦ º¸Á¸ÇÏ³ª ¼Óµµ°¡ ´À¸®´Ù´Â ´ÜÁ¡ÀÌ ÀÖÀ½
+   //   cv::bilateralFilter(src, dst, int d, double sigmaColor, double sigmaSpace, int borderType = BORDER_DEFAULT) - ì–‘ë°©í–¥ í•„í„°
+   //   - ì¤‘ì‹¬ í™”ì†Œì—ì„œì˜ ê±°ë¦¬ë¿ë§Œ ì•„ë‹ˆë¼ ì¤‘ì‹¬í™”ì†Œì™€ì˜ ë°ê¸° ì°¨ì´ë„ ê³ ë ¤í•¨
+   //   - edgeë¥¼ ë³´ì¡´í•˜ë‚˜ ì†ë„ê°€ ëŠë¦¬ë‹¤ëŠ” ë‹¨ì ì´ ìˆìŒ
    //   - sigmaColor: Filter sigma in the color space. A larger value of the parameter means that farther colors
    //   within the pixel neighborhood (see sigmaSpace) will be mixed together, resulting in larger areas of semi-equal color.
    //   - sigmaSpace: Filter sigma in the coordinate space. A larger value of the parameter means that farther pixels will
@@ -80,12 +80,12 @@ void PreProcess::preprocess() {
    //   //cv::medianBlur(processFrame, temp, 5);
    //   //cv::blur(grayFrame, processFrame , cv::Size(3, 3));
    //   //cv::bilateralFilter(processFrame, temp, -1, 15, 15);
-   //   //cv::bilateralFilter(processFrame, temp, -1, 8, 8); // ÀúÁÖÆÄ ÇÊÅÍ¸µ
+   //   //cv::bilateralFilter(processFrame, temp, -1, 8, 8); // ì €ì£¼íŒŒ í•„í„°ë§
    //   cv::GaussianBlur(grayFrame, blurredGrayFrame, cv::Size(3, 3), 1.5);
    //   //imshow("After smoothing gray Frame", blurredGrayFrame);
-   //   cv::addWeighted(grayFrame, 1.5, blurredGrayFrame, -0.8, 0, sharpFrame); // grayframeÀ» sharpeningÇÏ¿© sharpFrame¿¡ ÀúÀå
+   //   cv::addWeighted(grayFrame, 1.5, blurredGrayFrame, -0.8, 0, sharpFrame); // grayframeì„ sharpeningí•˜ì—¬ sharpFrameì— ì €ì¥
    //                                                         //cv::blur(sharpFrame, sharpBlurFrame, cv::Size(5, 5));
-   //                                                         //cv::bilateralFilter(sharpFrame, sharpBlurFrame, -1, 8, 8); // ÀúÁÖÆÄ ÇÊÅÍ¸µ
+   //                                                         //cv::bilateralFilter(sharpFrame, sharpBlurFrame, -1, 8, 8); // ì €ì£¼íŒŒ í•„í„°ë§
    //   cv::medianBlur(sharpFrame, sharpBlurFrame, 3);
    //   //get thresholdValue using Otus's method
    //   thresholdValue = getOtsuThreshold(blurredGrayFrame, grayFrame);
@@ -95,11 +95,11 @@ void PreProcess::preprocess() {
    //}
    //imshow("Roi Result", processFrame);
 
-   // ¿µ»óÀÇ °ü½É ¿µ¿ªÀÇ ÁÂ»ó´Ü°ú ¿ìÇÏ´Ü Point
-   cv::Mat grayFrame = processFrame; // grayscale ¿µ»ó
-   cv::Mat blurredGrayFrame; // blur Ã³¸®µÈ gray¿µ»ó
-   cv::Mat sharpFrame; // grayframeÀ» sharpeningÇÑ ¿µ»ó
-   cv::Mat sharpBlurFrame; // sharpeneingÇÑ ¿µ»óÀ» blur½ÃÅ² ¿µ»ó
+   // ì˜ìƒì˜ ê´€ì‹¬ ì˜ì—­ì˜ ì¢Œìƒë‹¨ê³¼ ìš°í•˜ë‹¨ Point
+   cv::Mat grayFrame = processFrame; // grayscale ì˜ìƒ
+   cv::Mat blurredGrayFrame; // blur ì²˜ë¦¬ëœ grayì˜ìƒ
+   cv::Mat sharpFrame; // grayframeì„ sharpeningí•œ ì˜ìƒ
+   cv::Mat sharpBlurFrame; // sharpeneingí•œ ì˜ìƒì„ blurì‹œí‚¨ ì˜ìƒ
    int thresholdValue;
    //imshow("gray frame", grayFrame);
 
@@ -112,17 +112,17 @@ void PreProcess::preprocess() {
    }
 
    /*
-   ÀúÁÖÆÄ ÇÊÅÍ¸µ
-   cv::blur(image, result, cv::Size(5,5)) => °¢ È­¼ÒÀÇ °ªÀ» »ç°¢Çü ÀÌ¿ôÀÇ Æò±Õ°ªÀ¸·Î ´ëÄ¡ÇÏ¿© ¿µ»óÀ» ºÎµå·´°Ô ÇÔ
+   ì €ì£¼íŒŒ í•„í„°ë§
+   cv::blur(image, result, cv::Size(5,5)) => ê° í™”ì†Œì˜ ê°’ì„ ì‚¬ê°í˜• ì´ì›ƒì˜ í‰ê· ê°’ìœ¼ë¡œ ëŒ€ì¹˜í•˜ì—¬ ì˜ìƒì„ ë¶€ë“œëŸ½ê²Œ í•¨
    cv::GaussianBlur(image, result, cv::Size(5,5), 1.5)
-   - Áß½É È­¼Ò¿¡¼­ÀÇ °Å¸®¿¡ µû¸¥ °¡ÁßÄ¡¸¦ Àû¿ëÇÑ mask»ç¿ë
-   - °¡Áß Æò±Õ
-   - Linear operation : does not preserve edges(sigma°ª¿¡ µû¶ó smooothing°ú edge º¸Á¸µµ°¡ °áÁ¤µÊ)
+   - ì¤‘ì‹¬ í™”ì†Œì—ì„œì˜ ê±°ë¦¬ì— ë”°ë¥¸ ê°€ì¤‘ì¹˜ë¥¼ ì ìš©í•œ maskì‚¬ìš©
+   - ê°€ì¤‘ í‰ê· 
+   - Linear operation : does not preserve edges(sigmaê°’ì— ë”°ë¼ smooothingê³¼ edge ë³´ì¡´ë„ê°€ ê²°ì •ë¨)
    cv::medianBlur(src, dst, int ksize)
    - non-linear filter: edge preserving
-   cv::bilateralFilter(src, dst, int d, double sigmaColor, double sigmaSpace, int borderType = BORDER_DEFAULT) - ¾ç¹æÇâ ÇÊÅÍ
-   - Áß½É È­¼Ò¿¡¼­ÀÇ °Å¸®»Ó¸¸ ¾Æ´Ï¶ó Áß½ÉÈ­¼Ò¿ÍÀÇ ¹à±â Â÷ÀÌµµ °í·ÁÇÔ
-   - edge¸¦ º¸Á¸ÇÏ³ª ¼Óµµ°¡ ´À¸®´Ù´Â ´ÜÁ¡ÀÌ ÀÖÀ½
+   cv::bilateralFilter(src, dst, int d, double sigmaColor, double sigmaSpace, int borderType = BORDER_DEFAULT) - ì–‘ë°©í–¥ í•„í„°
+   - ì¤‘ì‹¬ í™”ì†Œì—ì„œì˜ ê±°ë¦¬ë¿ë§Œ ì•„ë‹ˆë¼ ì¤‘ì‹¬í™”ì†Œì™€ì˜ ë°ê¸° ì°¨ì´ë„ ê³ ë ¤í•¨
+   - edgeë¥¼ ë³´ì¡´í•˜ë‚˜ ì†ë„ê°€ ëŠë¦¬ë‹¤ëŠ” ë‹¨ì ì´ ìˆìŒ
    - sigmaColor: Filter sigma in the color space. A larger value of the parameter means that farther colors
    within the pixel neighborhood (see sigmaSpace) will be mixed together, resulting in larger areas of semi-equal color.
    - sigmaSpace: Filter sigma in the coordinate space. A larger value of the parameter means that farther pixels will
@@ -138,14 +138,14 @@ void PreProcess::preprocess() {
    //cv::medianBlur(processFrame, temp, 5);
    //cv::blur(grayFrame, processFrame , cv::Size(3, 3));
    //cv::bilateralFilter(processFrame, temp, -1, 15, 15);
-   //cv::bilateralFilter(processFrame, temp, -1, 8, 8); // ÀúÁÖÆÄ ÇÊÅÍ¸µ
+   //cv::bilateralFilter(processFrame, temp, -1, 8, 8); // ì €ì£¼íŒŒ í•„í„°ë§
    cv::GaussianBlur(grayFrame, blurredGrayFrame, cv::Size(3, 3), 1.5);
 
    //imshow("After smoothing gray Frame", blurredGrayFrame);
 
-   cv::addWeighted(grayFrame, 1.5, blurredGrayFrame, -0.8, 0, sharpFrame); // grayframeÀ» sharpeningÇÏ¿© sharpFrame¿¡ ÀúÀå
+   cv::addWeighted(grayFrame, 1.5, blurredGrayFrame, -0.8, 0, sharpFrame); // grayframeì„ sharpeningí•˜ì—¬ sharpFrameì— ì €ì¥
                                                          //cv::blur(sharpFrame, sharpBlurFrame, cv::Size(5, 5));
-                                                         //cv::bilateralFilter(sharpFrame, sharpBlurFrame, -1, 8, 8); // ÀúÁÖÆÄ ÇÊÅÍ¸µ
+                                                         //cv::bilateralFilter(sharpFrame, sharpBlurFrame, -1, 8, 8); // ì €ì£¼íŒŒ í•„í„°ë§
 
    cv::medianBlur(sharpFrame, sharpBlurFrame, 3);
    cv::GaussianBlur(grayFrame, blurredGrayFrame, cv::Size(3, 3), 1.5);
@@ -160,7 +160,7 @@ void PreProcess::preprocess() {
 int PreProcess::getBasicGlobalThresholdValue(cv::Mat &frame) {
    int thresholdValue, low_cnt, high_cnt, low_sum, high_sum, i, j, th;
    thresholdValue = 120;
-   th = 15; // ÀÎÁ¤ ¿ÀÂ÷ ¹üÀ§
+   th = 15; // ì¸ì • ì˜¤ì°¨ ë²”ìœ„
    low_cnt = high_cnt = low_sum = high_sum = 0;
 
    while (1) {
@@ -193,14 +193,14 @@ int PreProcess::getBasicGlobalThresholdValue(cv::Mat &frame) {
 int PreProcess::getOtsuThreshold(cv::Mat &processFrame, cv::Mat &grayFrame) {
    // compute edge image as absolute value of the laplacian
 
-   cv::Mat src = processFrame; // blurÃ³¸®µÈ gray¿µ»ó
-   cv::Mat laplacianFrame; // laplacian operationÀÌµÈ frame(ÇöÀç´Â Canny operationÀÌ µÇ¾î ÀÖÀ½)
-   cv::Mat otsuHistogramFrame; // otsu's method¿¡ »ç¿ëµÉ histogram
-   cv::Mat cannyFrame; // canny edge detectionÀÌ µÈ ¿µ»ó
-   cv::Mat sharpBlurFrame; // sharpeneingÇÑ ¿µ»óÀ» blur½ÃÅ² ¿µ»ó
-   cv::Mat blurFrame = src; // blurÃ³¸®µÈ gray¿µ»ó
+   cv::Mat src = processFrame; // blurì²˜ë¦¬ëœ grayì˜ìƒ
+   cv::Mat laplacianFrame; // laplacian operationì´ëœ frame(í˜„ì¬ëŠ” Canny operationì´ ë˜ì–´ ìˆìŒ)
+   cv::Mat otsuHistogramFrame; // otsu's methodì— ì‚¬ìš©ë  histogram
+   cv::Mat cannyFrame; // canny edge detectionì´ ëœ ì˜ìƒ
+   cv::Mat sharpBlurFrame; // sharpeneingí•œ ì˜ìƒì„ blurì‹œí‚¨ ì˜ìƒ
+   cv::Mat blurFrame = src; // blurì²˜ë¦¬ëœ grayì˜ìƒ
    cv::Mat multiplyFrame; // grayFrame & laplacianFrame
-   int otsuThreshold; // threshold °ª
+   int otsuThreshold; // threshold ê°’
 
    cv::Canny(src, laplacianFrame, 10, 300);
    //cv::Mat temp;
@@ -215,11 +215,11 @@ int PreProcess::getOtsuThreshold(cv::Mat &processFrame, cv::Mat &grayFrame) {
    //cv::threshold(laplacianFrame, temp, 90, 255, 0); // thresholding laplacian frame
    //cv::imshow("thresholded laplacian frame", laplacianFrame);
 
-   multiplyFrame = grayFrame & laplacianFrame; // and operation of grayFrame & laplacianFrame(¸¶½ºÅ©·Î È°¿ë)
+   multiplyFrame = grayFrame & laplacianFrame; // and operation of grayFrame & laplacianFrame(ë§ˆìŠ¤í¬ë¡œ í™œìš©)
 
                                     //cv::imshow("and of gray and T-laplacian", multiplyFrame);
 
-                                    /* otsu's method¿¡¼­ È÷½ºÅä±×·¥ ¿¬»ê¿¡ »ç¿ëÇÒ otsuHistogramFrame */
+                                    /* otsu's methodì—ì„œ íˆìŠ¤í† ê·¸ë¨ ì—°ì‚°ì— ì‚¬ìš©í•  otsuHistogramFrame */
    cv::MatIterator_<uchar> start, end, origin;
    origin = multiplyFrame.begin<uchar>();
    for (start = multiplyFrame.begin<uchar>(), end = multiplyFrame.end<uchar>(); start != end; ++start) {
@@ -242,7 +242,7 @@ void PreProcess::updateFrame(const cv::Mat &frame) {
  // processFrame = ~processFrame;
 
    //imshow("update frame", processFrame);
-   frameNum++; // temproal blurring¿¡¼­ »ç¿ëÇÏ´Â Á¤º¸
+   frameNum++; // temproal blurringì—ì„œ ì‚¬ìš©í•˜ëŠ” ì •ë³´
    //leftOriginalFrame = frame(cv::Rect(upperLeft, lowerRigntOfLeftFrame));
    //rightOriginalFrame = frame(cv::Rect(upperLeftOfRightFrame, lowerRight));
    //roiFrame[ROI_LEVEL1] = processFrame(cv::Rect(UPPER_LEFT_1, LOWER_RIGHT_1));
@@ -253,7 +253,7 @@ void PreProcess::updateFrame(const cv::Mat &frame) {
 }
 
 bool PreProcess::addToFrameStack(cv::Mat frame) {
-   /* frameStack¿¡ 5°³ÀÇ ÇÁ·¹ÀÓÀ» ÀúÀåÇØµÒ */
+   /* frameStackì— 5ê°œì˜ í”„ë ˆì„ì„ ì €ì¥í•´ë‘  */
    if (frameStackCount == STACK_FRAME_NUM) {
       // if (frameNum % 2 == 1 ) {
       frameStack.erase(frameStack.begin());
@@ -278,16 +278,16 @@ cv::Mat PreProcess::temporalBlur(cv::Mat frame) {
    double sharpSrcRate = 1.9;
    double sharpBlurRate = -0.9;
 
-   // 6ÇÁ·¹ÀÓ °£°İÀ¸·Î 3ÀåÀÇ ÇÁ·¹ÀÓÀÇ Æò±Õ»ç¿ë
-   // 6ÇÁ·¹ÀÓ °£°İÀ¸·Î 4ÀåÀÇ ÇÁ·¹ÀÓÀÇ Æò±Õ »ç¿ë
-   // 3ÇÁ·¹ÀÓ °£°İÀ¸·Î 8ÀåÀÇ ÇÁ·¹ÀÓÀÇ Æò±Õ »ç¿ë
-   // 3ÇÁ·¹ÀÓ °£°İÀ¸·Î 6ÀåÀÇ ÇÁ·¹ÀÓÀÇ Æò±Õ »ç¿ë
+   // 6í”„ë ˆì„ ê°„ê²©ìœ¼ë¡œ 3ì¥ì˜ í”„ë ˆì„ì˜ í‰ê· ì‚¬ìš©
+   // 6í”„ë ˆì„ ê°„ê²©ìœ¼ë¡œ 4ì¥ì˜ í”„ë ˆì„ì˜ í‰ê·  ì‚¬ìš©
+   // 3í”„ë ˆì„ ê°„ê²©ìœ¼ë¡œ 8ì¥ì˜ í”„ë ˆì„ì˜ í‰ê·  ì‚¬ìš©
+   // 3í”„ë ˆì„ ê°„ê²©ìœ¼ë¡œ 6ì¥ì˜ í”„ë ˆì„ì˜ í‰ê·  ì‚¬ìš©
    //int frameStepSize = 3;
    //int averageNum = 6;
    int frameStepSize = 1;
    int averageNum = 2;
 
-   // °¢ ÇÁ·¹ÀÓ¸¶´Ù sharpening ÀÛ¾÷, avg frame ÃÊ±âÈ­
+   // ê° í”„ë ˆì„ë§ˆë‹¤ sharpening ì‘ì—…, avg frame ì´ˆê¸°í™”
    cv::GaussianBlur(frameStack.at(0), blurFrame, cv::Size(3, 3), 1.5);
    cv::addWeighted(frameStack.at(0), sharpSrcRate, blurFrame, sharpBlurRate, 0, tempFrame);
 
