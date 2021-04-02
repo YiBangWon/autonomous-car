@@ -67,9 +67,9 @@ using namespace cv::ml;
 void main() {
 	//variables
 	char FullFileName[100];
-	char pos_FirstFileName[100] = "C:\\Users\\kang_\\Desktop\\°øÇĞÇÁ·ÎÁ§Æ®±âÈ¹_smartcar\\samples\\data\\pos_1373";
+	char pos_FirstFileName[100] = "C:\\Users\\kang_\\Desktop\\ê³µí•™í”„ë¡œì íŠ¸ê¸°íš_smartcar\\samples\\data\\pos_1373";
 	//char SaveHogDesFileName[100] = "Positive.xml";
-	char neg_FirstFileName[100] = "C:\\Users\\kang_\\Desktop\\°øÇĞÇÁ·ÎÁ§Æ®±âÈ¹_smartcar\\samples\\data\\neg_2753";
+	char neg_FirstFileName[100] = "C:\\Users\\kang_\\Desktop\\ê³µí•™í”„ë¡œì íŠ¸ê¸°íš_smartcar\\samples\\data\\neg_2753";
 	//char SaveHogDesFileName[100] = "Negative.xml";
 	int pos_FileNum = 1373;
 	int neg_FileNum = 2753;
