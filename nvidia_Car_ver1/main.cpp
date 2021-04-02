@@ -1,9 +1,3 @@
-/*
-SID: 21000220
-Name: Hee-Beom Kim
-email: hee70b@gmail.com
-*/
-
 #include <ros/ros.h>
 #include <ros/package.h>
 
@@ -24,9 +18,9 @@ email: hee70b@gmail.com
 #include "patternCheck.h"
 
 // global variables
-LaneDetector laneDetector; // LaneDetector Å¬·¡½º º¯¼ö => Â÷¼± ÀÎ½ÄÀ» À§ÇØ ÇÊ¿äÇÑ ÇÊµåº¯¼ö¿Í ¸Þ¼Òµå¸¦ °¡Áö°í ÀÖÀ½
+LaneDetector laneDetector; // LaneDetector í´ëž˜ìŠ¤ ë³€ìˆ˜ => ì°¨ì„  ì¸ì‹ì„ ìœ„í•´ í•„ìš”í•œ í•„ë“œë³€ìˆ˜ì™€ ë©”ì†Œë“œë¥¼ ê°€ì§€ê³  ìžˆìŒ
 LaneDetector laneDetector_future;
-PreProcess preProcess; // PreProcess Å¬·¡½º º¯¼ö = > ÀüÃ³¸® °úÁ¤À» À§ÇØ ÇÊ¿äÇÑ ÇÊµåº¯¼ö¿Í ¸Þ¼Òµå¸¦ °¡Áö°í ÀÖÀ½
+PreProcess preProcess; // PreProcess í´ëž˜ìŠ¤ ë³€ìˆ˜ = > ì „ì²˜ë¦¬ ê³¼ì •ì„ ìœ„í•´ í•„ìš”í•œ í•„ë“œë³€ìˆ˜ì™€ ë©”ì†Œë“œë¥¼ ê°€ì§€ê³  ìžˆìŒ
 PreProcess preProcess_future;
 Controller controller;
 PatternCheck patternCheck;
@@ -161,7 +155,7 @@ cv::Mat imageProcess(cv::Mat frame){
 	//imshow("Warp Image - Gray", laneDetector.getIpImage());
 
 
-	laneDetector.setLaneMarker(); // search window pointµéÀ» ¸¸µê.
+	laneDetector.setLaneMarker(); // search window pointë“¤ì„ ë§Œë“¦.
 //	laneDetector_future.setLaneMarker();
 //	float curveture =  abs(laneDetector.getHoughlineCluterSlope() - laneDetector_future.getHoughlineCluterSlope());
 	// houghline left => laneDetector.cpp	
