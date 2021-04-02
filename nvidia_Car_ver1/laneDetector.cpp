@@ -31,11 +31,11 @@ void LaneDetector::warpImage(cv::Mat src, int option) {
 	ROS_Invers_Matrix_Frame = src;
 	
 	//imshow("test Source", src);
-	cv::Point2f srcPoint[4]; // ¿À¸¥ÂÊ À§ => ¿À¸¥ÂÊ ¾Æ·¡ => ¿ŞÂÊ À§ => ¿ŞÂÊ ¾Æ·¡ ¼ø
-	cv::Point2f dstPoint[4]; // ¿À¸¥ÂÊ À§ => ¿À¸¥ÂÊ ¾Æ·¡ => ¿ŞÂÊ À§ => ¿ŞÂÊ ¾Æ·¡ ¼ø
+	cv::Point2f srcPoint[4]; // ì˜¤ë¥¸ìª½ ìœ„ => ì˜¤ë¥¸ìª½ ì•„ë˜ => ì™¼ìª½ ìœ„ => ì™¼ìª½ ì•„ë˜ ìˆœ
+	cv::Point2f dstPoint[4]; // ì˜¤ë¥¸ìª½ ìœ„ => ì˜¤ë¥¸ìª½ ì•„ë˜ => ì™¼ìª½ ìœ„ => ì™¼ìª½ ì•„ë˜ ìˆœ
 	float width = topRightSrcP.x - topLeftSrcP.x;
 	float hight = lowRightSrcP.y - topRightSrcP.y;
-	cv::Mat dst = cv::Mat(src.size(), src.type());; // warpingÇÑ ÀÌ¹ÌÁö
+	cv::Mat dst = cv::Mat(src.size(), src.type());; // warpingí•œ ì´ë¯¸ì§€
 
 	// warping source points
 	srcPoint[0] = topLeftSrcP;
@@ -66,9 +66,9 @@ void LaneDetector::warpImage(cv::Mat src, int option) {
 	dstPoint[3] = cv::Point2f(topLeftSrcP.x + width, topLeftSrcP.y);
 
 	// Warping image and getting transformation matrix
-	transformMatrix = cv::getPerspectiveTransform(srcPoint, dstPoint); // º¯È¯ Çà·Ä
-	cv::warpPerspective(src, dst, transformMatrix, dst.size(), CV_INTER_LINEAR); // top view·Î º¯È¯
-	cv::invert(transformMatrix, invertTransformMatrix); // calculating the inverse of inverse perspective transformation matrix(¿ªº¯È¯ Çà·Ä)  
+	transformMatrix = cv::getPerspectiveTransform(srcPoint, dstPoint); // ë³€í™˜ í–‰ë ¬
+	cv::warpPerspective(src, dst, transformMatrix, dst.size(), CV_INTER_LINEAR); // top viewë¡œ ë³€í™˜
+	cv::invert(transformMatrix, invertTransformMatrix); // calculating the inverse of inverse perspective transformation matrix(ì—­ë³€í™˜ í–‰ë ¬)  
 	ipFrameWidth = dst.cols;
 
 	// getting ROI Inverse Perspective images
@@ -136,7 +136,7 @@ void LaneDetector::setLaneMarker(void) {
 	cv::HoughLines(ipCannyImage, totalLanes, 1, CV_PI / 180 * 1.5, threshold, 0, 0, -CV_PI / 2, CV_PI / 2);
 
 	if (totalLanes.size() != 0) {
-		// ÃÖ´ë 25°³ÀÇ houghline¸¸À» »ç¿ë
+		// ìµœëŒ€ 25ê°œì˜ houghlineë§Œì„ ì‚¬ìš©
 		while (totalLanes.size() > 25) {
 			totalLanes.erase(totalLanes.begin() + 25);
 		}
@@ -144,8 +144,8 @@ void LaneDetector::setLaneMarker(void) {
 	}
 
 	/*
-	±ŞÄ¿ºê ÆÇ´Ü ³í¸® => ±ºÁıÈ­µÈ ¿ŞÂÊ°ú ¿À¸¥ÂÊ ÇãÇÁ¶óÀÎµéÀÇ Æò±Õ x ÀıÆíÀÇ °£°İÀÌ 20 ¹Ì¸¸ÀÌ°í(Å¾ºä¿¡¼­ µµ·ÎÀÇ Æø 120), ¿ŞÂÊ ¿À¸¥ÂÊ ±ºÁıÈ­µÈ ÇãÇÁ¶óÀÎÀÇ Æò±Õ±â¿ï±â°¡ ¸ğµÎ
-	tan 50¿¡¼­ tan 0 »çÀÌÀÇ ±â¿ï±â¸¦ À¯ÁöÇÒ ¶§ ±ŞÄ¿ºê·Î ÆÇ´Ü.
+	ê¸‰ì»¤ë¸Œ íŒë‹¨ ë…¼ë¦¬ => êµ°ì§‘í™”ëœ ì™¼ìª½ê³¼ ì˜¤ë¥¸ìª½ í—ˆí”„ë¼ì¸ë“¤ì˜ í‰ê·  x ì ˆí¸ì˜ ê°„ê²©ì´ 20 ë¯¸ë§Œì´ê³ (íƒ‘ë·°ì—ì„œ ë„ë¡œì˜ í­ 120), ì™¼ìª½ ì˜¤ë¥¸ìª½ êµ°ì§‘í™”ëœ í—ˆí”„ë¼ì¸ì˜ í‰ê· ê¸°ìš¸ê¸°ê°€ ëª¨ë‘
+	tan 50ì—ì„œ tan 0 ì‚¬ì´ì˜ ê¸°ìš¸ê¸°ë¥¼ ìœ ì§€í•  ë•Œ ê¸‰ì»¤ë¸Œë¡œ íŒë‹¨.
 	*/
 	//cout << "testtttttttttttttt???????? " << abs(houghLinesInfo.leftLineInterceptX - houghLinesInfo.rightLineInterceptX) << endl;
 }
@@ -274,26 +274,26 @@ if ((abs(houghLinesInfo.leftLineInterceptX - houghLinesInfo.rightLineInterceptX)
 		cout << "Scarp\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" << endl;
 		detectLane(SPLIT_ROI_OPTION);
 		
-		if (isLeftRightLaneValid()) { // ±ŞÄ¿ºê ÁøÀÔÈÄ breakÁ¶°Ç(¾çÂÊ valid Â÷¼± ³ª¿À¸é ±×°É·Î »ç¿ë)
+		if (isLeftRightLaneValid()) { // ê¸‰ì»¤ë¸Œ ì§„ì…í›„ breakì¡°ê±´(ì–‘ìª½ valid ì°¨ì„  ë‚˜ì˜¤ë©´ ê·¸ê±¸ë¡œ ì‚¬ìš©)
 			drawLaneDetectResult(SPLIT_ROI_OPTION);
 			houghLinesInfo.isScarp = false;
-		} else { //ÀüÃ¼ ROI¿¡¼­ Â÷¼± °ËÃâ
+		} else { //ì „ì²´ ROIì—ì„œ ì°¨ì„  ê²€ì¶œ
 			detectLane(NON_SPLIT_ROI_OPTION);
 			drawLaneDetectResult(NON_SPLIT_ROI_OPTION);
 			houghLinesInfo.isScarp = true;
 		}
-	} else { // ±ŞÄ¿ºê°¡ ¾Æ´Ñ °æ¿ì
+	} else { // ê¸‰ì»¤ë¸Œê°€ ì•„ë‹Œ ê²½ìš°
 		detectLane(SPLIT_ROI_OPTION);
 		
-		if (isLeftRightLaneValid()) { // valid Â÷¼±ÀÌ detectµÈ °æ¿ì
-			// validÇÑ Â÷¼±ÀÏ °æ¿ì ÀÌÀü Â÷¼± Á¤º¸ update
+		if (isLeftRightLaneValid()) { // valid ì°¨ì„ ì´ detectëœ ê²½ìš°
+			// validí•œ ì°¨ì„ ì¼ ê²½ìš° ì´ì „ ì°¨ì„  ì •ë³´ update
 			cout << "in11111111111111111111111 "<< endl;
 			leftPointRecord[0] = leftLanePoints[0];
 			leftPointRecord[1] = leftLanePoints[1];
 			rightPointRecord[0] = rightLanePoints[0];
 			rightPointRecord[1] = rightLanePoints[1];
 			drawLaneDetectResult(SPLIT_ROI_OPTION);
-		} else { // validÇÏÁö ¾ÊÀº Â÷¼±ÀÌ detectµÈ °æ¿ì => ÀÌÀü Â÷¼± À¯Áö
+		} else { // validí•˜ì§€ ì•Šì€ ì°¨ì„ ì´ detectëœ ê²½ìš° => ì´ì „ ì°¨ì„  ìœ ì§€
 			cout << "in222222222222222222222 " << endl;
 			drawLaneDetectResult(SPLIT_ROI_OPTION);
 		}
@@ -302,12 +302,12 @@ if ((abs(houghLinesInfo.leftLineInterceptX - houghLinesInfo.rightLineInterceptX)
 
 }
 
-//ipImageÀÇ left, right ROIºĞ¸®ÇØ¼­ lanemarker settingÇÏ°í Â÷¼±À» °ËÃâ => ¿Ã¹Ù¸¥ Â÷¼± °ËÃâÀÏ °æ¿ì private º¯¼ö isLaneDetected¸¦ true·Î ¹Ù²ãÁÜ
+//ipImageì˜ left, right ROIë¶„ë¦¬í•´ì„œ lanemarker settingí•˜ê³  ì°¨ì„ ì„ ê²€ì¶œ => ì˜¬ë°”ë¥¸ ì°¨ì„  ê²€ì¶œì¼ ê²½ìš° private ë³€ìˆ˜ isLaneDetectedë¥¼ trueë¡œ ë°”ê¿”ì¤Œ
 void LaneDetector::detectLane(int option) {
 	cv::Mat rgbFrame;
 	int threshold = 15;
 
-	// left, right ROIºĞ¸®ÇØ¼­ lanemarker settingÇÏ´Â ³í¸®
+	// left, right ROIë¶„ë¦¬í•´ì„œ lanemarker settingí•˜ëŠ” ë…¼ë¦¬
 	if (option == SPLIT_ROI_OPTION) {
 		cv::Mat ipLeftCannyImage;
 		cv::Mat ipRightCannyImage;
@@ -324,7 +324,7 @@ void LaneDetector::detectLane(int option) {
 
 		
 
-		// ¿À¸¥ÂÊ ROI¿µ¿ª 
+		// ì˜¤ë¥¸ìª½ ROIì˜ì—­ 
 		if (rightHoughLines.size() != 0) {
 			while (rightHoughLines.size() > 20) {
 				rightHoughLines.erase(rightHoughLines.begin() + 20);
@@ -389,7 +389,7 @@ if (leftHoughLines.size() != 0) {
 
 
 	}
-	// total ROI »ç¿ë
+	// total ROI ì‚¬ìš©
 	else if (option == NON_SPLIT_ROI_OPTION) {
 		vector<cv::Vec2f> houghLines;
 		cv::HoughLines(ipCannyImage, houghLines, 1, CV_PI / 180 * 1.5, threshold, 0, 0, -CV_PI / 3, CV_PI / 3);
@@ -449,7 +449,7 @@ if (leftHoughLines.size() != 0) {
 
 
 bool LaneDetector::isLeftRightLaneValid(void) {
-	// °ËÃâµÈ ¾çÂÊ Â÷¼±ÀÌ validÇÑ Â÷¼±ÀÎÁö È®ÀÎ => ¼­·Î ÆòÇà, Â÷¼± °£°İÀÌ ÀÏÁ¤ ¹üÀ§(¿µ»ó¸¶´Ù ´Ù¸§ - laneDetector.hÀÇ ) ¾È¿¡ µé¾î¿Ã °Í
+	// ê²€ì¶œëœ ì–‘ìª½ ì°¨ì„ ì´ validí•œ ì°¨ì„ ì¸ì§€ í™•ì¸ => ì„œë¡œ í‰í–‰, ì°¨ì„  ê°„ê²©ì´ ì¼ì • ë²”ìœ„(ì˜ìƒë§ˆë‹¤ ë‹¤ë¦„ - laneDetector.hì˜ ) ì•ˆì— ë“¤ì–´ì˜¬ ê²ƒ
 /*
 	if (((abs(ipLeftLaneSlope) - abs(ipRightLaneSlope)) < 0.4) && ((abs(topLeftPoint1.x - topRightPoint1.x) + abs(topLeftPoint2.x - topRightPoint2.x)) / 2 < LANE_SPACE + 25)
 		&& ((abs(topLeftPoint1.x - topRightPoint1.x) + abs(topLeftPoint2.x - topRightPoint2.x)) / 2 > LANE_SPACE - 25)) */
@@ -478,7 +478,7 @@ bool LaneDetector::isLeftRightLaneValid(void) {
 		cout << "Valid Lane ~~~" << endl;
 		return true;
 	}
-	else { // validÇÏÁö ¾ÊÀº Â÷¼±ÀÏ °æ¿ì => ÀÌÀü Â÷¼± Á¤º¸ updateÇÏÁö ¾ÊÀ½(ÀÌÀü Â÷¼± À¯Áö)
+	else { // validí•˜ì§€ ì•Šì€ ì°¨ì„ ì¼ ê²½ìš° => ì´ì „ ì°¨ì„  ì •ë³´ updateí•˜ì§€ ì•ŠìŒ(ì´ì „ ì°¨ì„  ìœ ì§€)
 		//cout << "Invalid Lane ~~~" << endl;
 		//cout << "Valid Lane !!!!!!!!!!!!!!!!!!!! NOt" << endl;
 		return false;
@@ -491,22 +491,22 @@ bool LaneDetector::isLeftRightLaneValid(void) {
 void LaneDetector::clusterHouglines(vector<cv::Vec2f> houghlines, vector<vector<cv::Vec2f> > &houghlineCluster) {
 
 	int clusterNum = 0;
-	float averageXintercept0 = 0; // ¿ŞÂÊ ±ºÁıÈ­µÈ houghlineµéÀÇ Æò±Õ x ÀıÆí
-	float averageXintercept1 = 0; // ¿À¸¥ÂÊ ±ºÁıÈ­µÈ houghlineµéÀÇ Æò±Õ x ÀıÆí
-	float averageSlope0 = 0; // ¿ŞÂÊ ±ºÁıÈ­µÈ houghlineµéÀÇ Æò±Õ ±â¿ï±â
-	float averageSlope1 = 0; // ¿À¸¥ÂÊ ±ºÁıÈ­µÈ houghlineµéÀÇ Æò±Õ ±â¿ï±â
+	float averageXintercept0 = 0; // ì™¼ìª½ êµ°ì§‘í™”ëœ houghlineë“¤ì˜ í‰ê·  x ì ˆí¸
+	float averageXintercept1 = 0; // ì˜¤ë¥¸ìª½ êµ°ì§‘í™”ëœ houghlineë“¤ì˜ í‰ê·  x ì ˆí¸
+	float averageSlope0 = 0; // ì™¼ìª½ êµ°ì§‘í™”ëœ houghlineë“¤ì˜ í‰ê·  ê¸°ìš¸ê¸°
+	float averageSlope1 = 0; // ì˜¤ë¥¸ìª½ êµ°ì§‘í™”ëœ houghlineë“¤ì˜ í‰ê·  ê¸°ìš¸ê¸°
 	double xInterceptSum = 0;
 	double slopeSum = 0;
 	cv::Vec2f interceptAndSlopeInfo; // info[0]: x intercept , info[1] = slope
 
-	// houghlines¸¦ rho°ªÀ» ±âÁØÀ¸·Î ¿À¸§Â÷¼øÀ¸·Î Á¤·Ä
+	// houghlinesë¥¼ rhoê°’ì„ ê¸°ì¤€ìœ¼ë¡œ ì˜¤ë¦„ì°¨ìˆœìœ¼ë¡œ ì •ë ¬
 	sort(houghlines.begin(), houghlines.end(), [](const cv::Vec2f & lhs, const cv::Vec2f & rhs) {
 		return lhs[0] < rhs[0];
 	});
 
 	//cout << "houghline size: " << houghlines.size() << endl;
 
-	// houghline clustering ¾Ë°í¸®Áò
+	// houghline clustering ì•Œê³ ë¦¬ì¦˜
 	while (houghlines.size() >= 4) {
 		int houghlineSize = houghlines.size();
 		int midIndex = houghlines.size() / 2;
@@ -530,12 +530,12 @@ void LaneDetector::clusterHouglines(vector<cv::Vec2f> houghlines, vector<vector<
 		}
 	}
 
-	//////////////////////////////////////////// cluster ºĞ·ù ÈÄ ¿ŞÂÊ ¿À¸¥ÂÊ houghline cluter °ËÃâ //////////////////////////////////////
+	//////////////////////////////////////////// cluster ë¶„ë¥˜ í›„ ì™¼ìª½ ì˜¤ë¥¸ìª½ houghline cluter ê²€ì¶œ //////////////////////////////////////
 	if (clusterNum == 0) {
-		// ÀÌÀü Â÷¼± À¯Áö
+		// ì´ì „ ì°¨ì„  ìœ ì§€
 	}
 	else if (clusterNum == 1) {
-		// ¿ŞÂÊ ¼±ÀÎÁö ¿À¸¥ÂÊ ¼±ÀÎÁö ÆÇ´ÜÇÏ´Â ³í¸®¸¸ Áı¾î ³ÖÀ¸¸é µÊ
+		// ì™¼ìª½ ì„ ì¸ì§€ ì˜¤ë¥¸ìª½ ì„ ì¸ì§€ íŒë‹¨í•˜ëŠ” ë…¼ë¦¬ë§Œ ì§‘ì–´ ë„£ìœ¼ë©´ ë¨
 
 	}
 	else if (clusterNum >= 2) {
@@ -543,7 +543,7 @@ void LaneDetector::clusterHouglines(vector<cv::Vec2f> houghlines, vector<vector<
 			return lhs.size() > rhs.size();
 		});
 
-		// ¿ŞÂÊ ¼±°ú ¿À¸¥ÂÊ ¼± ±¸ºĞ
+		// ì™¼ìª½ ì„ ê³¼ ì˜¤ë¥¸ìª½ ì„  êµ¬ë¶„
 		for (int i = 0; i < houghlineCluster.at(0).size(); i++) {
 			interceptAndSlopeInfo = getInterceptAndSlope(houghlineCluster.at(0).at(i));
 			xInterceptSum += interceptAndSlopeInfo[0];
@@ -566,8 +566,8 @@ void LaneDetector::clusterHouglines(vector<cv::Vec2f> houghlines, vector<vector<
 		averageSlope1 = slopeSum / houghlineCluster.at(1).size();
 
 		if (averageXintercept0 > averageXintercept1) {
-			// houghlineCluster.at(0) ÀÌ ¿À¸¥ÂÊ Â÷¼± ÁıÇÕ
-			// ÀıÆí Á¤º¸ ÀÔ·Â
+			// houghlineCluster.at(0) ì´ ì˜¤ë¥¸ìª½ ì°¨ì„  ì§‘í•©
+			// ì ˆí¸ ì •ë³´ ì…ë ¥
 			houghLinesInfo.rightLineInterceptX = averageXintercept0;
 			houghLinesInfo.leftLineInterceptX = averageXintercept1;
 			houghLinesInfo.rightLineSlope = averageSlope0;
@@ -581,8 +581,8 @@ void LaneDetector::clusterHouglines(vector<cv::Vec2f> houghlines, vector<vector<
 
 		}
 		else {
-			// houglineintercept.at(1)ÀÌ ¿À¸¥ÂÊ Â÷¼± ÁıÇÕ
-			// ÀıÆí Á¤º¸ ÀÔ·Â
+			// houglineintercept.at(1)ì´ ì˜¤ë¥¸ìª½ ì°¨ì„  ì§‘í•©
+			// ì ˆí¸ ì •ë³´ ì…ë ¥
 			houghLinesInfo.rightLineInterceptX = averageXintercept1;
 			houghLinesInfo.leftLineInterceptX = averageXintercept0;
 			houghLinesInfo.rightLineSlope = averageSlope1;
@@ -608,7 +608,7 @@ void LaneDetector::clusterHouglines(vector<cv::Vec2f> houghlines, vector<vector<
 		cv::Point pt1;
 		cv::Point pt2;
 
-		// Point ±¸ÇÏ±â
+		// Point êµ¬í•˜ê¸°
 		if (theta < CV_PI / 4. || theta > 3. * CV_PI / 4.) {
 			pt1 = cv::Point(rho / cos(theta), 0);
 			pt2 = cv::Point((rho - ipImage.rows * sin(theta)) / cos(theta), ipImage.rows);
@@ -629,7 +629,7 @@ void LaneDetector::clusterHouglines(vector<cv::Vec2f> houghlines, vector<vector<
 		cv::Point pt1;
 		cv::Point pt2;
 
-		// Point ±¸ÇÏ±â
+		// Point êµ¬í•˜ê¸°
 		if (theta < CV_PI / 4. || theta > 3. * CV_PI / 4.) {
 			pt1 = cv::Point(rho / cos(theta), 0);
 			pt2 = cv::Point((rho - ipImage.rows * sin(theta)) / cos(theta), ipImage.rows);
@@ -656,7 +656,7 @@ void LaneDetector::drawHoughlines(float rhoValue, float thetaValue, cv::Mat fram
 	float xIntercept = 0;
 	//vector<cv::Point> samplePoints;
 
-	// Point ±¸ÇÏ±â
+	// Point êµ¬í•˜ê¸°
 	if (theta < CV_PI / 4. || theta > 3. * CV_PI / 4.) {
 		pt1 = cv::Point(rho / cos(theta), 0);
 		pt2 = cv::Point((rho - frame.rows * sin(theta)) / cos(theta), frame.rows);
@@ -683,7 +683,7 @@ cv::Vec2f LaneDetector::getInterceptAndSlope(cv::Vec2f houghLine) {
 	info[1] = 0.0; // slope;
 	//vector<cv::Point> samplePoints;
 
-	// Point ±¸ÇÏ±â
+	// Point êµ¬í•˜ê¸°
 	if (theta < CV_PI / 4. || theta > 3. * CV_PI / 4.) {
 		pt1 = cv::Point(rho / cos(theta), 0);
 		pt2 = cv::Point((rho - ipImage.rows * sin(theta)) / cos(theta), ipImage.rows);
@@ -715,7 +715,7 @@ void LaneDetector::setSamplePoints(vector<cv::Vec2f>& lanes, cv::Mat frame, vect
 		float theta = (*it)[1];
 		//vector<cv::Point> samplePoints;
 
-		// hough line ±×¸®±â => ½ÇÀü¿¡¼­´Â ÁÖ¼® Ã³¸® ÇÒ °Í
+		// hough line ê·¸ë¦¬ê¸° => ì‹¤ì „ì—ì„œëŠ” ì£¼ì„ ì²˜ë¦¬ í•  ê²ƒ
 		if (theta < CV_PI / 4. || theta > 3. * CV_PI / 4.) {
 			cv::Point pt1(rho / cos(theta), 0);
 			cv::Point pt2((rho - frame.rows * sin(theta)) / cos(theta), frame.rows);
@@ -744,7 +744,7 @@ void LaneDetector::setSamplePoints(vector<cv::Vec2f>& lanes, cv::Mat frame, vect
 }
 
 
-// https://gist.github.com/kchapelier/b1fd7e71f5378b871e3d6daa5ae193dc Âü°í
+// https://gist.github.com/kchapelier/b1fd7e71f5378b871e3d6daa5ae193dc ì°¸ê³ 
 double* LaneDetector::setGaussianKernel(int w, double sigma) {
 	matchFilterWidth = w;
 	double sqr2pi = sqrt(2 * M_PI);
@@ -777,7 +777,7 @@ void LaneDetector::matchGaussianFilter(vector<cv::Point> &searchWindowPoint, vec
 		vector<Convolution> convolutionInfoVec;
 
 
-		// Æ¯Á¤ y ÃàÀ§¿¡¼­ match filter¿Í convolution½ÃÅ´
+		// íŠ¹ì • y ì¶•ìœ„ì—ì„œ match filterì™€ convolutionì‹œí‚´
 		for (int filterIndex = 0; filterIndex < searchWindowLength * 2 - matchFilterWidth; filterIndex += 2) {
 
 			Convolution convolutionInfo;
@@ -802,18 +802,18 @@ void LaneDetector::matchGaussianFilter(vector<cv::Point> &searchWindowPoint, vec
 
 		}
 
-		// convolution °ªÀ» ±âÁØÀ¸·Î ÇÏ¿© ¿À¸§ Â÷¼øÀ¸·Î Á¤·Ä
+		// convolution ê°’ì„ ê¸°ì¤€ìœ¼ë¡œ í•˜ì—¬ ì˜¤ë¦„ ì°¨ìˆœìœ¼ë¡œ ì •ë ¬
 		sort(convolutionInfoVec.begin(), convolutionInfoVec.end(), [](const Convolution& lhs, const Convolution& rhs) {
 			return lhs.convolutionValue < rhs.convolutionValue;
 		});
 
-		convolutionResultVec.push_back(convolutionInfoVec.at(convolutionInfoVec.size() - 1)); // search window »ó¿¡¼­ °¡Àå Å« convolution °ªÀ» °®´Â value¸¦ pushÇÔ.
+		convolutionResultVec.push_back(convolutionInfoVec.at(convolutionInfoVec.size() - 1)); // search window ìƒì—ì„œ ê°€ì¥ í° convolution ê°’ì„ ê°–ëŠ” valueë¥¼ pushí•¨.
 		//cout << "test1: " << convolutionInfoVec.at(0).convolutionValue << endl;
 		//cout << "test2: " << convolutionInfoVec.at(convolutionInfoVec.size() - 1).convolutionValue << endl;
 	}
 
 	//cout << "test convolutionResultVec size: " << convolutionResultVec.size() << endl;
-	// convolutionResultVec¸¦ °°Àº ·¹º§(yÃà hight ±âÁØ)¿¡¼­ sortingÇÏ±â
+	// convolutionResultVecë¥¼ ê°™ì€ ë ˆë²¨(yì¶• hight ê¸°ì¤€)ì—ì„œ sortingí•˜ê¸°
 	for (int i = 0; i < samplePointNum; i++) {
 		vector<Convolution> temp;
 		for (int k = 0; k < samplePoitHomogeneousLevel; k++) {
@@ -832,43 +832,43 @@ void LaneDetector::matchGaussianFilter(vector<cv::Point> &searchWindowPoint, vec
 
 void LaneDetector::fitsLine(cv::Mat temp, int option) {
 	cv::Vec4f line;
-	float laneInterval; // °ËÃâµÈ ¾çÂÊ Â÷¼±°£ °£°İ
+	float laneInterval; // ê²€ì¶œëœ ì–‘ìª½ ì°¨ì„ ê°„ ê°„ê²©
 
 	if (option == RIGHT_OPTION) {
 		cv::fitLine(rightLaneMarkerPoints, line,
-			CV_DIST_L2, // °Å¸® À¯Çü
-			0,   // L2 °Å¸®¸¦ »ç¿ëÇÏÁö ¾ÊÀ½
-			0.01, 0.01); // Á¤È®µµ
+			CV_DIST_L2, // ê±°ë¦¬ ìœ í˜•
+			0,   // L2 ê±°ë¦¬ë¥¼ ì‚¬ìš©í•˜ì§€ ì•ŠìŒ
+			0.01, 0.01); // ì •í™•ë„
 
-		// ´ÜÀ§ ¹æÇâ º¤ÅÍ(cv::Vec4fÀÇ Ã¹ µÎ°³ °ª), 
-		// ¼±¿¡ ³õÀÎ ÇÑ Á¡ÀÇ ÁÂÇ¥(cv::Vec4fÀÇ ¸¶Áö¸· µÎ °ª) ÇüÅÂÀÎ ¼± ¹æÁ¤½ÄÀÇ ÆÄ¶ó¹ÌÅÍ¸¦ Á¦°ø
-		// ¸¶Áö¸· µÎ ÆÄ¶ó¹ÌÅÍ´Â ¼± ÆÄ¶ó¹ÌÅÍ¿¡ ´ëÇÑ ¿ä±¸ Á¤È®µµ¸¦ ÁöÁ¤
-		// ÇÔ¼ö¿¡¼­ ¿ä±¸ ÇÏ´Â std::vector ³»¿¡ Æ÷ÇÔµÈ ÀÔ·Â Á¡Àº cv::Mat·Î Àü´Ş
+		// ë‹¨ìœ„ ë°©í–¥ ë²¡í„°(cv::Vec4fì˜ ì²« ë‘ê°œ ê°’), 
+		// ì„ ì— ë†“ì¸ í•œ ì ì˜ ì¢Œí‘œ(cv::Vec4fì˜ ë§ˆì§€ë§‰ ë‘ ê°’) í˜•íƒœì¸ ì„  ë°©ì •ì‹ì˜ íŒŒë¼ë¯¸í„°ë¥¼ ì œê³µ
+		// ë§ˆì§€ë§‰ ë‘ íŒŒë¼ë¯¸í„°ëŠ” ì„  íŒŒë¼ë¯¸í„°ì— ëŒ€í•œ ìš”êµ¬ ì •í™•ë„ë¥¼ ì§€ì •
+		// í•¨ìˆ˜ì—ì„œ ìš”êµ¬ í•˜ëŠ” std::vector ë‚´ì— í¬í•¨ëœ ì…ë ¥ ì ì€ cv::Matë¡œ ì „ë‹¬
 
-						 // ¼± ¹æÁ¤½ÄÀº ÀÏºÎ ¼Ó¼º°è»ê¿¡ »ç¿ë
-						 // ¿Ã¹Ù¸¥ ¼±À» °è»êÇÏ´ÂÁö È®ÀÎÇÏ±â À§ÇØ ¿µ»ó¿¡ ¿¹»ó ¼±À» ±×¸²
-						 // 200È­¼Ò ±æÀÌ¿Í 3È­¼Ò µÎ²²¸¦ °®´Â ÀÓÀÇÀÇ °ËÀº ¼¼±×¸ÕÆ®¸¦ ±×¸²
+						 // ì„  ë°©ì •ì‹ì€ ì¼ë¶€ ì†ì„±ê³„ì‚°ì— ì‚¬ìš©
+						 // ì˜¬ë°”ë¥¸ ì„ ì„ ê³„ì‚°í•˜ëŠ”ì§€ í™•ì¸í•˜ê¸° ìœ„í•´ ì˜ìƒì— ì˜ˆìƒ ì„ ì„ ê·¸ë¦¼
+						 // 200í™”ì†Œ ê¸¸ì´ì™€ 3í™”ì†Œ ë‘ê»˜ë¥¼ ê°–ëŠ” ì„ì˜ì˜ ê²€ì€ ì„¸ê·¸ë¨¼íŠ¸ë¥¼ ê·¸ë¦¼
 	}
 	else if (option == LEFT_OPTION) {
 		cv::fitLine(leftLaneMarkerPoints, line,
-			CV_DIST_L2, // °Å¸® À¯Çü
-			0,   // L2 °Å¸®¸¦ »ç¿ëÇÏÁö ¾ÊÀ½
-			0.01, 0.01); // Á¤È®µµ
+			CV_DIST_L2, // ê±°ë¦¬ ìœ í˜•
+			0,   // L2 ê±°ë¦¬ë¥¼ ì‚¬ìš©í•˜ì§€ ì•ŠìŒ
+			0.01, 0.01); // ì •í™•ë„
 	}
 	else if (option == TOTAL_OPTION) {
 		cv::fitLine(totalLaneMarkerPoints, line,
-			CV_DIST_L2, // °Å¸® À¯Çü
-			0,   // L2 °Å¸®¸¦ »ç¿ëÇÏÁö ¾ÊÀ½
-			0.01, 0.01); // Á¤È®µµ
+			CV_DIST_L2, // ê±°ë¦¬ ìœ í˜•
+			0,   // L2 ê±°ë¦¬ë¥¼ ì‚¬ìš©í•˜ì§€ ì•ŠìŒ
+			0.01, 0.01); // ì •í™•ë„
 	}
 
 
-	int x0 = line[2]; // ¼±¿¡ ³õÀº ÇÑ Á¡
+	int x0 = line[2]; // ì„ ì— ë†“ì€ í•œ ì 
 	int y0 = line[3];
 
 	//circle(temp, cv::Point(x0, y0), 3, cv::Scalar(0, 255, 0), 2, 8);
 
-	double slope = 1 * line[1] / line[0]; // ±â¿ï±â
+	double slope = 1 * line[1] / line[0]; // ê¸°ìš¸ê¸°
 	int upperX = (-1 * y0) / slope + x0;
 	int upperY = 0;
 	int lowerX = (temp.rows - y0) / slope + x0;
@@ -963,8 +963,8 @@ void LaneDetector::fitsLine(cv::Mat temp, int option) {
 		//imshow("Lane detection result!!!", normalViewOriginalFrame);
 	}
 
-	//int x1 = x0 - 15 * line[0]; // 200 ±æÀÌ¸¦ °®´Â º¤ÅÍ Ãß°¡
-	//int y1 = y0 - 15 * line[1]; // ´ÜÀ§ º¤ÅÍ »ç¿ë
+	//int x1 = x0 - 15 * line[0]; // 200 ê¸¸ì´ë¥¼ ê°–ëŠ” ë²¡í„° ì¶”ê°€
+	//int y1 = y0 - 15 * line[1]; // ë‹¨ìœ„ ë²¡í„° ì‚¬ìš©
 	//cv::line(temp, p1, p2, cv::Scalar(255, 255, 0), 3);
 	//cv::line(temp, cv::Point(x0, y0), cv::Point(x1, y1), cv::Scalar(0, 255, 0), 5);
 
@@ -986,7 +986,7 @@ cv::Mat LaneDetector::getHoughClusterFrame(void){
 	return ipImage;
 }
 
-// Âü°í: https://stackoverflow.com/questions/36805703/poly-opencv-semi-transperent
+// ì°¸ê³ : https://stackoverflow.com/questions/36805703/poly-opencv-semi-transperent
 void LaneDetector::drawLaneDetectResult(int option) {
 	
 	if (option == SPLIT_ROI_OPTION) {
@@ -1047,7 +1047,7 @@ void LaneDetector::drawLaneDetectResult(int option) {
 
 
 void LaneDetector::laneInfoUpdate(int option) {
-	// Á÷¼±µµ·Î
+	// ì§ì„ ë„ë¡œ
 	laneInfo.setIsCurvedDirection(-1);
 	if (option == SPLIT_ROI_OPTION) {
 		if (((leftPointRecord[0].x - leftPointRecord[1].x) != 0) && ((rightPointRecord[0].x - rightPointRecord[1].x) != 0)) {			
@@ -1072,7 +1072,7 @@ void LaneDetector::laneInfoUpdate(int option) {
 		}
 		//else cout << "~~~~~~~~~~~~~~~ else!!!!!!!!!11" << endl;
 	}
-	// ±ŞÄ¿ºêµµ·Î
+	// ê¸‰ì»¤ë¸Œë„ë¡œ
 	else if (option == NON_SPLIT_ROI_OPTION){ // option == NON_SPLIT_ROI_OPTION
 		if ((totalPointRecord[0].x - totalPointRecord[1].x) != 0) {	
 			float totalLineSlope = ((float)totalPointRecord[0].y - (float)totalPointRecord[1].y) / ((float)totalPointRecord[0].x - (float)totalPointRecord[1].x);
